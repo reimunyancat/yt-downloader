@@ -2,7 +2,7 @@ import yt_dlp
 import os
 import asyncio
 import concurrent.futures
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 def get_info(youtube_url):
     with yt_dlp.YoutubeDL({'quiet': True}) as ydl:
