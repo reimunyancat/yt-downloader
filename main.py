@@ -24,6 +24,7 @@ def download_video(youtube_url, download_path):
     ydl_opts = {
         'format': 'bestvideo+bestaudio/best',
         'outtmpl': outtmpl,
+        'writethumbnail': True,
         'merge_output_format': 'mp4',
         'postprocessors': [{
             'key': 'FFmpegVideoConvertor',
@@ -60,6 +61,7 @@ def download_audio(youtube_url, download_path):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': outtmpl,
+        'writethumbnail': True,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
@@ -114,13 +116,13 @@ async def process_url(url, download_type, download_path, max_workers=3):
 async def main_async():
     url = input('Enter the YouTube URL: ')
     fileformat = input('Enter the file format: video (1) or audio (2): ')
-    max_workers = input('Enter the number of simultaneous downloads (default 3): ')
+    max_workers = input('Enter the number of simultaneous downloads (default 2): ')
     
     download_path = 'downloads'
     if not os.path.exists(download_path):
         os.makedirs(download_path)
     
-    max_workers = int(max_workers) if max_workers.isdigit() else 3
+    max_workers = int(max_workers) if max_workers.isdigit() else 2
     
     if fileformat not in ['1', '2']:
         print("Invalid option. Please choose 1 for video or 2 for audio.")
