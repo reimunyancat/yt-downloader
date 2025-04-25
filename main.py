@@ -1,7 +1,5 @@
 import yt_dlp
 import os
-import asyncio
-import concurrent.futures
 from urllib.parse import urlparse
 
 def get_info(youtube_url):
@@ -86,52 +84,31 @@ def extract_video_ids(url):
     
     return [url]
 
-async def process_url(url, download_type, download_path, max_workers=3):
+def process_url(url, download_type, download_path):
     video_urls = extract_video_ids(url)
     
-    if len(video_urls) == 1:
+    for video_url in video_urls:
         if download_type == '1':
-            download_video(video_urls[0], download_path)
+            print(f"Downloading video: {video_url}")
+            download_video(video_url, download_path)
         else:
-            download_audio(video_urls[0], download_path)
-        return
-    
-    download_func = download_video if download_type == '1' else download_audio
-    
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        loop = asyncio.get_event_loop()
-        futures = [
-            loop.run_in_executor(
-                executor,
-                download_func,
-                url,
-                download_path
-            )
-            for url in video_urls
-        ]
-        
-        for completed in await asyncio.gather(*futures):
-            print(f"Completed: {completed}")
+            print(f"Downloading audio: {video_url}")
+            download_audio(video_url, download_path)
+        print(f"Completed: {video_url}")
 
-async def main_async():
+def main():
     url = input('Enter the YouTube URL: ')
     fileformat = input('Enter the file format: video (1) or audio (2): ')
-    max_workers = input('Enter the number of simultaneous downloads (default 2): ')
     
     download_path = 'downloads'
     if not os.path.exists(download_path):
         os.makedirs(download_path)
     
-    max_workers = int(max_workers) if max_workers.isdigit() else 2
-    
     if fileformat not in ['1', '2']:
         print("Invalid option. Please choose 1 for video or 2 for audio.")
         return
     
-    await process_url(url, fileformat, download_path, max_workers)
-
-def main():
-    asyncio.run(main_async())
+    process_url(url, fileformat, download_path)
 
 if __name__ == '__main__':
     main()
