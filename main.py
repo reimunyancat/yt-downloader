@@ -7,6 +7,10 @@ def get_info(youtube_url):
         info = ydl.extract_info(youtube_url, download=False)
     return info
 
+def get_cookies_path():
+    cookies_path = os.path.join(os.path.dirname(__file__), 'cookies.txt')
+    return cookies_path if os.path.exists(cookies_path) else None
+
 def download_video(youtube_url, download_path):
     info = get_info(youtube_url)
     
@@ -38,6 +42,9 @@ def download_video(youtube_url, download_path):
             'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
         }
     }
+    cookies_path = get_cookies_path()
+    if cookies_path:
+        ydl_opts['cookiefile'] = cookies_path
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.extract_info(youtube_url, download=True)
@@ -59,13 +66,16 @@ def download_audio(youtube_url, download_path):
     ydl_opts = {
         'format': 'bestaudio/best',
         'outtmpl': outtmpl,
-        'writethumbnail': True,
+        'writethumbnail': False,
         'postprocessors': [{
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '320',
         }],
     }
+    cookies_path = get_cookies_path()
+    if cookies_path:
+        ydl_opts['cookiefile'] = cookies_path
 
     with yt_dlp.YoutubeDL(ydl_opts) as ydl:
         ydl.extract_info(youtube_url, download=True)
