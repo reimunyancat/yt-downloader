@@ -36,22 +36,23 @@ def download_video(youtube_url, download_path):
         outtmpl = os.path.join(download_path, '%(title)s.%(ext)s')
 
     ydl_opts = {
-        'format': 'bestvideo+bestaudio/best',
+        'format': (
+            'bestvideo[vcodec^=avc1][ext=mp4]+bestaudio[ext=m4a]/'
+            'bestvideo[vcodec^=avc1]+bestaudio/'
+            'best[vcodec^=avc1]/best'
+        ),
         'outtmpl': outtmpl,
         'writethumbnail': True,
         'merge_output_format': 'mp4',
         'postprocessors': [{
-            'key': 'FFmpegVideoConvertor',
+            'key': 'FFmpegVideoRemuxer',
             'preferedformat': 'mp4',
         }],
-        'postprocessor_args': [
-            '-c:v', 'copy',
-            '-c:a', 'aac',
-            '-b:a', '320k'
-        ],
         'prefer_ffmpeg': True,
-        'headers': {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) '
+                        'AppleWebKit/537.36 (KHTML, like Gecko) '
+                        'Chrome/124.0 Safari/537.36'
         },
         'cookiesfrombrowser': (BROWSER_NAME, ),
         'js_runtimes': {'node': {}}
